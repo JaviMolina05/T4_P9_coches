@@ -16,16 +16,22 @@ export function mapeo(cars) {
     });
 };
 
-export function filtrar(cars, option) {
+export function filtrar(cars, year, make, model, type) {
     return new Promise((resolve, reject) => {
-        if (cars != null) {
-            const arrayCar = cars.filter(elemento => {
-                elemento.year = option;
-                elemento.make = option;
-                elemento.model = option;
-                elemento.type = option;
-            }); // Retornar la condición explícitamente
-            resolve(arrayCar);
+        if (cars != null && cars != undefined) {
+            const carsByYear = cars.filter(car => {
+                return year === "ALL" ? car : car.year >= year;
+            }); 
+            const carsByMake = carsByYear.filter(car => {
+                return make === "ALL" ? car : car.make === make;
+            }); 
+            const carsByModel = carsByMake.filter(car => {
+                return model === "ALL" ? car : car.model === model;
+            }); 
+            const carsByType = carsByModel.filter(car => {
+                return type === "ALL" ? car : car.type === type;
+            }); 
+            resolve(carsByType);
         } else {
             reject("Array nulo");
         }

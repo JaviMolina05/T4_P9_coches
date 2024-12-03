@@ -26,28 +26,20 @@ divBlock.className = "block";
 h1.textContent = title;
 body.appendChild(divContainer);
 divContainer.appendChild(h1);
-strongText.forEach(elemento => {
+strongText.forEach((elemento, index) => {
     let span = document.createElement("span");
     let select = document.createElement("select");
     let strong = document.createElement("strong");
     strong.textContent = elemento;
-    arraySelect.forEach(elemento => {
-        elemento.forEach(elemento2 => {
-            let option = document.createElement("option");
-            option.setAttribute("value", elemento2);
-            option.textContent = elemento2;
-            select.appendChild(option);
-            option.addEventListener("click", () => {
-                
-                    option.addEventListener("click", () => {
-                        async function filtrar(opcion) {
-                            const filtrados = await promesas.filtrar(cars); // Filtrar por año >= 2010
-                        }
-                        filtrar(option);
-                    })
-                
-            })
-        })
+    let optionAll = document.createElement("option");
+    optionAll.textContent = "ALL"
+    arraySelect[index].forEach(index => {
+        let option = document.createElement("option");
+        option.setAttribute("value", index);
+        option.textContent = index;
+        select.appendChild(optionAll);
+        select.appendChild(option);
+        
     });
     divFilters.appendChild(span);
     divFilters.appendChild(select);
@@ -56,17 +48,32 @@ strongText.forEach(elemento => {
 
 
 divContainer.appendChild(divFilters);
-divContainer.appendChild(divBlock);
-// Promesas
-async function promesa() {
+async function promesa(car, year, make, model, type) {
     try {
-        const mapeados = await promesas.mapeo(cars); // Mapear objetos Car
-        const divs = await promesas.divs(mapeados); // Crear divs con la información
-
+        divBlock.textContent = "";
+        const mapeados = await promesas.mapeo(car); // Mapear objetos Car
+        const filtrados = await promesas.filtrar(mapeados, year, make, model, type);
+        const divs = await promesas.divs(filtrados); // Crear divs con la información
         // Añadir cada div al bloque
         divs.forEach(div => divBlock.appendChild(div));
+        divContainer.appendChild(divBlock);
     } catch (error) {
         console.error("Error:", error);
     }
 }
-promesa();
+
+// Promesas
+let selectFiltros = document.querySelectorAll("select");
+selectFiltros.forEach(elemento => {
+    elemento.addEventListener("change", (e) => {
+        promesa(cars, 
+            selectFiltros[0].value, 
+            selectFiltros[1].value, 
+            selectFiltros[2].value, 
+            selectFiltros[3].value
+        );
+    });
+});
+promesa(cars, "ALL", "ALL", "ALL", "ALL");
+
+
